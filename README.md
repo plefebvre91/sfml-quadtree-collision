@@ -21,4 +21,3 @@ sudo apt-get install cmake libsfml-dev
 2. Compile with `mkdir build && cd build && cmake ..`
 3. Go to binary folder `cd ./bin`
 4. Run with `./quadtree`
-## Game Design
