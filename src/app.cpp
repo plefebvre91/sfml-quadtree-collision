@@ -62,11 +62,18 @@ void draw(Node* tree, sf::RenderWindow* w) {
   if (tree == nullptr) return;
 
   sf::RectangleShape rect;
-  rect.setPosition(sf::Vector2f(tree->x, tree->y));
-  rect.setSize(sf::Vector2f(tree->width, tree->height));
+  const auto area = tree->getArea();
+
+  rect.setPosition(sf::Vector2f(area.left, area.top));
+  rect.setSize(sf::Vector2f(area.width, area.height));
   rect.setOutlineColor(sf::Color::Blue);
   rect.setOutlineThickness(1.0);
-  rect.setFillColor(sf::Color::Transparent);
+
+  if (tree->countElements() > 0)
+    rect.setFillColor(sf::Color(0x00,0x33,0xCC,0x33));
+  else
+    rect.setFillColor(sf::Color::Transparent);
+
   w->draw(rect);
 
   for (int i=0; i<4; i++) {
@@ -91,12 +98,9 @@ void App::handleEvents()
     sf::Event event;
     while (_window->pollEvent(event))
     {
-      if(event.type == sf::Event::KeyPressed) {
-        switch(event.key.code) {
-        case sf::Keyboard::Escape: _window->close(); break;
-        default: break;
-        }
-      }
+      if(event.type == sf::Event::KeyPressed)
+        if (event.key.code == sf::Keyboard::Escape)
+          _window->close();
 
       if (event.type == sf::Event::Closed)
         _window->close();
