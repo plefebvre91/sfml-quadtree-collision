@@ -3,7 +3,7 @@ project(QUADTREE)
 cmake_minimum_required(VERSION 3.0)
 
 # set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wextra -Wall -pedantic --std=c++17 -g2")
-set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wextra -Wall -pedantic --std=c++17 -O2")
+set(CMAKE_CXX_FLAGS "-Wextra -Wall -pedantic --std=c++17 -g2")
 
 include_directories(include)
 

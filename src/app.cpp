@@ -21,11 +21,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. */
 
 #include "app.hpp"
-#include <X11/Xlib.h>
-#include <thread>
-#include <iostream>
 #include <cstdlib>
-#include <time.h>
+#include <ctime>
+#include "quadtree.hpp"
 
 #define WINDOW_WIDTH 1000
 #define WINDOW_HEIGHT 1000
@@ -40,8 +38,6 @@ sf::Vector2f randomVelocity() {
 }
 
 App::App() {
-  XInitThreads();
-
   // Create SFML window
   srand(time(0));
   _window = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "app");
@@ -51,8 +47,32 @@ App::App() {
   for(auto& entity: _entities) {
     entity.setPlayableArea(sf::FloatRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT));
     entity.move(randomVelocity());
-
   }
+
+  _quadtree = new Node(sf::Rect<int>(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT));
+}
+
+App::~App() {
+  delete _quadtree;
+  delete _window;
+}
+
+
+void draw(Node* tree, sf::RenderWindow* w) {
+  if (tree == nullptr) return;
+
+  sf::RectangleShape rect;
+  rect.setPosition(sf::Vector2f(tree->x, tree->y));
+  rect.setSize(sf::Vector2f(tree->width, tree->height));
+  rect.setOutlineColor(sf::Color::Blue);
+  rect.setOutlineThickness(1.0);
+  rect.setFillColor(sf::Color::Transparent);
+  w->draw(rect);
+
+  for (int i=0; i<4; i++) {
+    draw(tree->_nodes[i], w);
+  }
+
 }
 
 void App::render() {
@@ -61,23 +81,13 @@ void App::render() {
     for(auto& entity: _entities)
       _window->draw(entity.getShape());
 
+    draw(_quadtree, _window);
+
     _window->display();
-}
-
-void App::update() {
-  sf::Clock clock;
-  while(_window->isOpen()){
-    auto dt = clock.restart().asSeconds();
-
-
-//      std::this_thread::sleep_for(std::chrono::milliseconds(VL_UPDATE_THREAD_MS));
-  }
 }
 
 void App::handleEvents()
 {
-  // Start the game loop
-    // Process events
     sf::Event event;
     while (_window->pollEvent(event))
     {
@@ -93,23 +103,21 @@ void App::handleEvents()
     }
 }
 
+
 void App::run()
 {
-
-  //std::thread render_thread(&_render, this);  while(_window->isOpen()){
-  //std::thread update_thread(&_update, this);
   sf::Clock clock;
 
   while(_window->isOpen()) {
     auto dt = clock.restart().asSeconds();
+    _quadtree->clear();
 
-    for(auto& entity: _entities) {
-      entity.update(dt);
+    for(int i=0; i<NB_ENTITY; i++) {
+      _entities[i].update(dt);
+      _quadtree->add<Entity>(_entities, i);
     }
-
     render();
+
     handleEvents();
   }
-  //update_thread.join();
-  //render_thread.join();
 }

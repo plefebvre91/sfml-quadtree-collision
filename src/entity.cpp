@@ -36,7 +36,7 @@ sf::Vector2f randomPosition() {
 
 
 Entity::Entity(): _position(), _velocity(), _acceleration() {
-  _shape.setRadius(8);
+  _shape.setRadius(2);
   _shape.setFillColor(sf::Color(0x33, 0xCC, 0x00));
   _shape.setOutlineColor(sf::Color::Green);
   _shape.setOutlineThickness(2);
@@ -51,14 +51,11 @@ void Entity::update(double dt) {
   _position.x += _velocity.x;
   _position.y += _velocity.y;
 
-  if (_position.x > _area.width || _position.x < 1) {
+  if (_position.x > _area.width || _position.x < 1)
     _velocity.x *= -1;
-  }
 
-  if (_position.y > _area.height || _position.y < 1) {
+  if (_position.y > _area.height || _position.y < 1)
     _velocity.y *= -1;
-  }
-
 
   _acceleration.y = 0.0f;
   _acceleration.x = 0.0f;
