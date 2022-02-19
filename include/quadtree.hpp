@@ -16,7 +16,7 @@
 
 #define BETWEEN(X, A, B) ((X>A) && (X<B))
 
-#define MAX_ELEMENTS 4
+#define MAX_ELEMENTS 2
 
 
 struct Node {
