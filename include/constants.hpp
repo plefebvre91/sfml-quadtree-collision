@@ -20,38 +20,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. */
 
-#include "entity.hpp"
-#include "constants.hpp"
-#include "utils.hpp"
+#ifndef CONSTANTS_HPP
+#define CONSTANTS_HPP
 
-Entity::Entity():
-    _velocity(), _acceleration() {
-  _position = Random::position(WINDOW_WIDTH, WINDOW_HEIGHT);
-  _shape.setPosition(_position);
-}
+#define WINDOW_WIDTH 1000
+#define WINDOW_HEIGHT 1000
+#define NB_ENTITY 200
+#define BETWEEN(X, A, B) ((X>=A) && (X<B))
 
-void Entity::init(int radius, const sf::Color& color, const sf::Color& outline, int thickness) {
-  _shape.setRadius(radius);
-  _shape.setFillColor(color);
-  _shape.setOutlineColor(outline);
-  _shape.setOutlineThickness(thickness);
-}
-
-void Entity::update(double dt) {
-  _velocity.x += _acceleration.x;
-  _velocity.y += _acceleration.y;
-
-  _position.x += _velocity.x;
-  _position.y += _velocity.y;
-
-  if (_position.x > _area.width || _position.x < 1)
-    _velocity.x *= -1;
-
-  if (_position.y > _area.height || _position.y < 1)
-    _velocity.y *= -1;
-
-  _acceleration.y = 0.0f;
-  _acceleration.x = 0.0f;
-
-  _shape.setPosition(_position);
-}
+#endif

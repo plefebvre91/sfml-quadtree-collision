@@ -20,9 +20,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. */
 
-
-#ifndef VL_ENTITY_HPP
-#define VL_ENTITY_HPP
+#ifndef ENTITY_HPP
+#define ENTITY_HPP
 
 #include <SFML/Graphics.hpp>
 
@@ -30,9 +29,17 @@ class Entity {
 public:
   /**
    * Constructor
-   * @param intial position
    */
   Entity();
+
+  /**
+   * Set visual properties
+   * @param radius in pixel
+   * @param fill color
+   * @param outline color
+   * @param outline thickness
+   */
+  void init(int radius, const sf::Color& color, const sf::Color& outline, int thickness);
 
   /**
    * Upadte object at each frame
@@ -41,7 +48,7 @@ public:
   void update(double dt);
 
   /**
-   * IPhysicalObject interface implementation
+   * Getter for position
    * @return object position
    */
   inline const sf::Vector2f& getPosition() const {
@@ -49,7 +56,7 @@ public:
   }
 
   /**
-   * IPhysicalObject interface implementation
+   * Setter for position
    * @param new position
    */
   inline void setPosition(const sf::Vector2f& position) {
@@ -57,23 +64,7 @@ public:
   }
 
   /**
-   * IDynamicObject interface implementation
-   * @return object velocity
-   */
-  inline const sf::Vector2f& getVelocity() const {
-    return _velocity;
-  }
-
-  /**
-   * IDynamicObject interface implementation
-   * @return object acceleration
-   */
-  inline const sf::Vector2f& getAcceleration() const {
-    return _acceleration;
-  }
-
-  /**
-   * Get shape
+   * Getter for shape
    * @return object acceleration
    */
   inline const sf::Drawable& getShape() const {
@@ -81,7 +72,7 @@ public:
   }
 
   /**
-   * IDynamicObject interface implementation
+   * Move particle
    * @param velocity
    */
   inline void move(const sf::Vector2f& v) {
@@ -92,7 +83,7 @@ public:
    * Define external bounds for the object
    * @param bounds coords
    */
-  void setPlayableArea(const sf::FloatRect& area) {
+  inline void setPlayableArea(const sf::FloatRect& area) {
       _area = area;
   }
 

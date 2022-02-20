@@ -21,32 +21,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. */
 
 #include "app.hpp"
-#include <cstdlib>
-#include <ctime>
 #include "quadtree.hpp"
-
-#define WINDOW_WIDTH 1000
-#define WINDOW_HEIGHT 1000
-
-sf::Vector2f randomVelocity() {
-  int e = rand()%2 == 0 ? 1:-1;
-  int f = rand()%2 == 0 ? 1:-1;
-  int x = 3 + rand() % 3;
-  int y = 3 + rand() % 3;
-
-  return sf::Vector2f(e*x,f*y);
-}
+#include "constants.hpp"
+#include "utils.hpp"
 
 App::App() {
   // Create SFML window
-  srand(time(0));
+  Random::init();
   _window = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "app");
   _window->setActive(false);
   _window->setFramerateLimit(60);
 
   for(auto& entity: _entities) {
+    entity.init(4, sf::Color(0x33CC00), sf::Color::Green, 1);
     entity.setPlayableArea(sf::FloatRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT));
-    entity.move(randomVelocity());
+    entity.move(Random::velocity());
   }
 
   _quadtree = new Node(sf::Rect<int>(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT));
@@ -56,7 +45,6 @@ App::~App() {
   delete _quadtree;
   delete _window;
 }
-
 
 void draw(Node* tree, sf::RenderWindow* w) {
   if (tree == nullptr) return;

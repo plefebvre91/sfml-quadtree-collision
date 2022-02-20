@@ -20,38 +20,46 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. */
 
-#include "entity.hpp"
+#ifndef UTILS_HPP
+#define UTILS_HPP
+
+#include <SFML/Graphics.hpp>
+#include <cstdlib>
+#include <ctime>
 #include "constants.hpp"
-#include "utils.hpp"
 
-Entity::Entity():
-    _velocity(), _acceleration() {
-  _position = Random::position(WINDOW_WIDTH, WINDOW_HEIGHT);
-  _shape.setPosition(_position);
-}
+struct Random {
 
-void Entity::init(int radius, const sf::Color& color, const sf::Color& outline, int thickness) {
-  _shape.setRadius(radius);
-  _shape.setFillColor(color);
-  _shape.setOutlineColor(outline);
-  _shape.setOutlineThickness(thickness);
-}
+  /**
+   * Init randomizer
+   */
+  static void init() {
+    srand(time(0));
+  }
 
-void Entity::update(double dt) {
-  _velocity.x += _acceleration.x;
-  _velocity.y += _acceleration.y;
+  /**
+   * Creates a random position in [0,xMax] x [0,yMax]
+   * @param maximum X coordinate
+   * @param maximum Y coordinate
+   */
+  static sf::Vector2f position(int xMax, int yMax) {
+    int x = rand() % xMax;
+    int y = rand() % yMax;
 
-  _position.x += _velocity.x;
-  _position.y += _velocity.y;
+    return sf::Vector2f(x,y);
+  }
 
-  if (_position.x > _area.width || _position.x < 1)
-    _velocity.x *= -1;
+  /**
+   * Creates a random velocity
+   */
+  static sf::Vector2f velocity() {
+    int e = rand()%2 == 0 ? 1:-1;
+    int f = rand()%2 == 0 ? 1:-1;
+    int x = 3 + rand() % 3;
+    int y = 3 + rand() % 3;
 
-  if (_position.y > _area.height || _position.y < 1)
-    _velocity.y *= -1;
+    return sf::Vector2f(e*x,f*y);
+  }
+};
 
-  _acceleration.y = 0.0f;
-  _acceleration.x = 0.0f;
-
-  _shape.setPosition(_position);
-}
+#endif

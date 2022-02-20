@@ -27,8 +27,7 @@ SOFTWARE. */
 #include <SFML/Graphics.hpp>
 #include "entity.hpp"
 #include "quadtree.hpp"
-
-#define NB_ENTITY 200
+#include "constants.hpp"
 
 class App {
   public:
@@ -36,6 +35,10 @@ class App {
    * Constructor
    */
   App();
+
+  /**
+   * Destructor
+   */
   ~App();
 
   /**
@@ -44,7 +47,7 @@ class App {
   void run();
 
   /**
-   * User inputs
+   * Handle user inputs
    */
   void handleEvents();
 
@@ -60,9 +63,9 @@ class App {
 
 
 private:
-  Entity _entities[NB_ENTITY];
   sf::RenderWindow* _window;
   Node* _quadtree;
+  Entity _entities[NB_ENTITY];
 };
 
 #endif
