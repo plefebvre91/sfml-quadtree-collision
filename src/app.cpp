@@ -30,10 +30,10 @@ App::App() {
   Random::init();
   _window = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "app");
   _window->setActive(false);
-  _window->setFramerateLimit(60);
+  _window->setFramerateLimit(30);
 
   for(auto& entity: _entities) {
-    entity.init(4, sf::Color(0x33CC00), sf::Color::Green, 1);
+    entity.init(1, sf::Color(0x33CC00), sf::Color::Green, 1);
     entity.setPlayableArea(sf::FloatRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT));
     entity.move(Random::velocity());
   }
@@ -46,39 +46,44 @@ App::~App() {
   delete _window;
 }
 
-void draw(Node* tree, sf::RenderWindow* w) {
-  if (tree == nullptr) return;
-
-  sf::RectangleShape rect;
-  const auto area = tree->getArea();
-
-  rect.setPosition(sf::Vector2f(area.left, area.top));
-  rect.setSize(sf::Vector2f(area.width, area.height));
-  rect.setOutlineColor(sf::Color::Blue);
-  rect.setOutlineThickness(1.0);
-
-  if (tree->countElements() > 0)
-    rect.setFillColor(sf::Color(0x00,0x33,0xCC,0x33));
-  else
-    rect.setFillColor(sf::Color::Transparent);
-
-  w->draw(rect);
-
-  for (int i=0; i<4; i++) {
-    draw(tree->_nodes[i], w);
-  }
-
-}
-
 void App::render() {
     _window->clear();
 
     for(auto& entity: _entities)
       _window->draw(entity.getShape());
 
-    draw(_quadtree, _window);
+    _quadtree->draw(_window);
 
     _window->display();
+}
+
+void App::resolveCollisions() {
+
+  // Retrieve all leaves from the quadtree
+  std::vector<Node*> leaves;
+  _quadtree->getLeaves(&leaves);
+
+  // For each leaf...
+  for (auto leaf: leaves) {
+
+    // ... get the associated objects
+    unsigned int* elements;
+    unsigned int nbEntities = leaf->getElements(&elements);
+
+    // Test collision between all objects in the leaf
+    for (unsigned int i=0; i<nbEntities; i++) {
+      Entity& e = _entities[elements[i]];
+
+      for (unsigned int j=i+1; j<nbEntities; j++) {
+        Entity& f = _entities[elements[j]];
+
+        if (e.isColliding(f)) {
+          e.bounce(f);
+          f.bounce(e);
+        }
+      }
+    }
+  }
 }
 
 void App::handleEvents()
@@ -96,8 +101,7 @@ void App::handleEvents()
 }
 
 
-void App::run()
-{
+void App::run() {
   sf::Clock clock;
 
   while(_window->isOpen()) {
@@ -108,7 +112,9 @@ void App::run()
       _entities[i].update(dt);
       _quadtree->add<Entity>(_entities, i);
     }
+    resolveCollisions();
     render();
+
 
     handleEvents();
   }

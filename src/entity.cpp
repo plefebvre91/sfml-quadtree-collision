@@ -24,10 +24,10 @@ SOFTWARE. */
 #include "constants.hpp"
 #include "utils.hpp"
 
+
 Entity::Entity():
     _velocity(), _acceleration() {
-  _position = Random::position(WINDOW_WIDTH, WINDOW_HEIGHT);
-  _shape.setPosition(_position);
+  _position = Random::position(WINDOW_WIDTH, WINDOW_HEIGHT) + STARTING_OFFSET;
 }
 
 void Entity::init(int radius, const sf::Color& color, const sf::Color& outline, int thickness) {
@@ -35,6 +35,23 @@ void Entity::init(int radius, const sf::Color& color, const sf::Color& outline, 
   _shape.setFillColor(color);
   _shape.setOutlineColor(outline);
   _shape.setOutlineThickness(thickness);
+  _shape.setOrigin(sf::Vector2f(radius, radius));
+  _shape.setPosition(_position);
+  _squaredRadius = radius*radius;
+}
+
+bool Entity::isColliding(const Entity& e) const {
+  sf::Vector2f p = e.getPosition();
+  sf::Vector2f v = p - _position;
+  return (v.x*v.x + v.y*v.y) < 4*_squaredRadius;
+}
+
+void Entity::bounce(Entity& e) {
+  const sf::Vector2f& v = Utils::nv(_position, e.getPosition()) ;
+  _velocity.x = 10*v.x;
+  _velocity.y = 10*v.y;
+
+  _shape.setFillColor(sf::Color::Blue);
 }
 
 void Entity::update(double dt) {

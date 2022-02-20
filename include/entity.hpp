@@ -24,6 +24,7 @@ SOFTWARE. */
 #define ENTITY_HPP
 
 #include <SFML/Graphics.hpp>
+#include "utils.hpp"
 
 class Entity {
 public:
@@ -64,6 +65,19 @@ public:
   }
 
   /**
+   * Collision detection
+   * @param the other entity
+   * @return true if it's colliding with the other entity
+   */
+  bool isColliding(const Entity& e) const;
+
+  /**
+   * Revert velocity according to angle of collision
+   * @param the other entity
+   */
+  void bounce(Entity& e);
+
+  /**
    * Getter for shape
    * @return object acceleration
    */
@@ -93,6 +107,7 @@ protected:
   sf::Vector2f _velocity;
   sf::Vector2f _acceleration;
   sf::FloatRect _area;
+  unsigned int _squaredRadius;
 };
 
 #endif

@@ -27,9 +27,38 @@ SOFTWARE. */
 #include <cstdlib>
 #include <ctime>
 #include "constants.hpp"
+#include <cmath>
+
+struct Utils {
+  /**
+   * Compute square distance between 2 points
+   */
+  static float sd(const sf::Vector2f& a, const sf::Vector2f& b) {
+    auto x = a.x - b.x;
+    auto y = a.y - b.y;
+    return x*x + y*y;
+  }
+
+  /**
+   * Compute vector coords from 2 points
+   */
+  static sf::Vector2f v(const sf::Vector2f& a, const sf::Vector2f& b) {
+    return b - a;
+  }
+
+  /**
+   * Compute normalized vector coords from 2 points
+   */
+  static sf::Vector2f nv(const sf::Vector2f& a, const sf::Vector2f& b) {
+    auto u = v(b,a);
+    auto n = std::hypotf(u.x, u.y);
+
+    return u/n;
+  }
+};
+
 
 struct Random {
-
   /**
    * Init randomizer
    */

@@ -23,9 +23,10 @@ SOFTWARE. */
 #ifndef CONSTANTS_HPP
 #define CONSTANTS_HPP
 
-#define WINDOW_WIDTH 1000
-#define WINDOW_HEIGHT 1000
-#define NB_ENTITY 200
+#define WINDOW_WIDTH 1200
+#define WINDOW_HEIGHT 1200
+#define NB_ENTITY 10000
+#define STARTING_OFFSET sf::Vector2f(600, 600)
 #define BETWEEN(X, A, B) ((X>=A) && (X<B))
 
 #endif

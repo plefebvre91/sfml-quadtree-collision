@@ -33,8 +33,7 @@ SOFTWARE. */
 #define SOUTH_EAST 2
 #define SOUTH_WEST 3
 
-#define MAX_ELEMENTS 2
-
+#define MAX_ELEMENTS 10
 
 class Node {
   using Position = sf::Vector2f;
@@ -44,35 +43,95 @@ class Node {
 public:
   /**
    * Constructor
+   * @param screen area associated to the node
    */
-  Node(const Rectangle& r):_area(r), _elements(), _leaf(true) {
+  Node(const Rectangle& r):_area(r), _elements(), _isLeaf(true) {
     for (auto& node: _nodes)
       node = nullptr;
   }
 
   /**
-   * Constructor
+   * Add an element in the tree
+   * @template type of elements referenced in the tree
+   * @entities the external array storing all objects
+   * @param index of object to add in tree
    */
   template<typename T>
   void add(const T* entities, EntityId id) {
-    if (_leaf == true) {
+
+    // If this is not a leaf, object should be inserted in the correct child
+    if (not _isLeaf)
+      insertInSubnodes<T>(entities, id);
+
+    // And if this node is a leaf, object is inserted
+    else {
       _elements.push_back(id);
 
+      // If there is too much objects in the same node...
       if (_elements.size() >= MAX_ELEMENTS) {
+
+        // ...the node is split in 4...
         _split();
 
+        // ...and its elements are re-dispatched in its children
         for (auto id: _elements)
           insertInSubnodes<T>(entities, id);
 
         _elements.clear();
       }
     }
-    else
-      insertInSubnodes<T>(entities, id);
   }
 
   /**
-   * Constructor
+   * Fill an array with all the tree leaves
+   * @param output array
+   */
+  void getLeaves(std::vector<Node*>* out) {
+    // If this node is a leaf, add it to the result...
+    if (_isLeaf)
+      out->push_back(this);
+
+    // ...else scan its children
+    else for (auto& node: _nodes)
+      if (node != nullptr)
+          node->getLeaves(out);
+  }
+
+  /**
+   * Getter for node elements
+   * @param output array
+   * @return the output size
+   */
+  unsigned int getElements(unsigned int** data) {
+    *data = _elements.data();
+    return _elements.size();
+  }
+
+  /**
+   * Drawing function
+   */
+  void draw(sf::RenderWindow* w) {
+    sf::RectangleShape rect;
+    rect.setPosition(sf::Vector2f(_area.left, _area.top));
+    rect.setSize(sf::Vector2f(_area.width, _area.height));
+    rect.setOutlineColor(sf::Color::Blue);
+    rect.setOutlineThickness(1.0);
+
+    if (_elements.size() > 0) {
+      rect.setFillColor(sf::Color(0x00,0x33,0xCC,0x33));
+      w->draw(rect);
+    }
+    else
+      rect.setFillColor(sf::Color::Transparent);
+
+    for (auto node: _nodes)
+      if (node != nullptr)
+        node->draw(w);
+  }
+
+
+  /**
+   * Clear the tree
    */
   void clear() {
     for (auto& node: _nodes)
@@ -83,28 +142,30 @@ public:
       }
 
     // As this node does not have children anymore, it becomes a leaf
-    _leaf = true;
+    _isLeaf = true;
   }
 
-  /**
-   * Constructor
-   */
-  inline const Rectangle& getArea() const {
-    return _area;
-  }
 
-  inline unsigned int countElements() const {
-    return _elements.size();
-  }
 
-  Node* _nodes[NB_SUBNODES]; // mettre un pointeur à la place
 private:
 
-  /**
-   * Constructor
-   */
+  // 4 Children
+  Node* _nodes[NB_SUBNODES];
 
+  // Screen are associated to this node
+  Rectangle _area;
+
+  // Referenced objects
+  std::vector<EntityId> _elements;
+
+  // True if node is a leaf
+  bool _isLeaf;
+
+  /**
+   * Creates the 4 children of a node
+   */
   void _split() {
+    // Get the area coordinates
     int x = _area.left;
     int y = _area.top;
     int width = _area.width;
@@ -117,31 +178,33 @@ private:
     _nodes[SOUTH_EAST] = new Node(Rectangle(x + width/2, y + height/2, width/2, height/2));
 
     // This node is no more a leaf
-    _leaf = false;
+    _isLeaf = false;
   }
 
   /**
-   * Constructor
+   * Add an element in correct children of a node.
+   * This is a recursive subroutine of add().
+   * @template type of elements referenced in the tree
+   * @entities the external array storing all objects
+   * @param index of object to add in tree
    */
   template<typename T>
   void insertInSubnodes(const T* entities, EntityId id) {
+    // Get the object positions
     const Position& position = entities[id].getPosition();
-    for (auto& node: _nodes)
+
+    // Search for the correct children for the node to be inserted
+    for (auto node: _nodes)
       if (node->contains(position))
         node->add(entities, id);
   }
 
   /**
-   * Constructor
+   * Return true if the position is in the node area
    */
   inline bool contains(const Position& p) const {
     return _area.contains(sf::Vector2i(p));
   }
-
-
-  Rectangle _area;
-  std::vector<EntityId> _elements;
-  bool _leaf;
 };
 
 #endif

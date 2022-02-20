@@ -61,6 +61,11 @@ class App {
    */
   void update();
 
+  /**
+   * Find and handle collisions
+   */
+  void resolveCollisions();
+
 
 private:
   sf::RenderWindow* _window;
