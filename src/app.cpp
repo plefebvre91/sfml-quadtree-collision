@@ -86,11 +86,10 @@ void App::resolveCollisions() {
   }
 }
 
-void App::handleEvents()
-{
+void App::handleEvents() {
     sf::Event event;
-    while (_window->pollEvent(event))
-    {
+  
+    while (_window->pollEvent(event)) {
       if(event.type == sf::Event::KeyPressed)
         if (event.key.code == sf::Keyboard::Escape)
           _window->close();
@@ -99,7 +98,6 @@ void App::handleEvents()
         _window->close();
     }
 }
-
 
 void App::run() {
   sf::Clock clock;
@@ -114,8 +112,6 @@ void App::run() {
     }
     resolveCollisions();
     render();
-
-
     handleEvents();
   }
 }
